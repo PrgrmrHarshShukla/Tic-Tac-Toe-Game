@@ -26,8 +26,8 @@
 }
 
 .restart {
-  border: 2px solid black;
-  color: brown;
+  border: 2px solid rgb(194, 131, 21);
+  color: blue;
   font-size: 3vh;
   height: 9vh;
   margin-top: 30px;
