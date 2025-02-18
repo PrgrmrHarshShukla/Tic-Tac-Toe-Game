@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 
 function Square({ value, onSquareClick }) {
@@ -11,60 +11,67 @@ function Square({ value, onSquareClick }) {
 export default function Board() { 
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
-  // console.log(squares)
 
-    function handleClick(i) {
-     if( calculateWinner(squares) || squares[i] ){
+  function handleRestart(){
+    setIsX(true);
+    setSquares(Array(9).fill(null));
+  }
+
+  function handleClick(i) {
+    if(calculateWinner(squares) || squares[i]){
       return;
-     }
-
-     squares[i] = (isX ? 'X' : 'O')
-     setSquares(squares)
-     setIsX(!isX)
     }
 
+    setSquares(prev => {
+      const newSqrs = [...prev];
+      newSqrs[i] = isX ? 'X' : '🤖';
+      return newSqrs;
+    });
+    setIsX(!isX)
+  }
 
-    const winner = calculateWinner(squares);
-    let status;
 
-    if( winner ){
-      status = 'Winner: ' + winner;
+  const winner = useMemo(() => calculateWinner(squares), [squares]);
+  let status;
+
+  if( winner ){
+    status = winner === 'X' ? '🎉 Winner: X 🎉' : '🎉 Winner: Computer 🎉';
+  }
+  else{
+    status = 'Turn of: ' + (isX ? 'X' : 'Computer');
+  }
+
+  useEffect(() => {
+    if(!isX && !calculateWinner(squares)){
+      const index = playedByComputer(squares);
+      setTimeout(() => handleClick(index), 300);
     }
-    else{
-      status = 'Next Player: ' + (isX ? 'X' : 'O');
-    }
+  }, [squares]);
 
 
-    function handleRestart(){
-      setIsX(true);
-      setSquares(Array(9).fill(null));
-    }
-
-    // function renderSquare(i) {
-    //   return <Square value = {squares[i]} onSquareClick = {() => handleClick(i)} />
-    // }
-
-    return(
-        <div className="container">
-          <div className="status">{status}</div>
-          <div className="board-row">
-          <Square value = {squares[0]} onSquareClick = {() => handleClick(0)} />
-          <Square value = {squares[1]} onSquareClick = {() => handleClick(1)} />
-          <Square value = {squares[2]} onSquareClick = {() => handleClick(2)} />
-          </div>
-          <div className="board-row">
-          <Square value = {squares[3]} onSquareClick = {() => handleClick(3)} />
-          <Square value = {squares[4]} onSquareClick = {() => handleClick(4)} />
-          <Square value = {squares[5]} onSquareClick = {() => handleClick(5)} />
-          </div>
-          <div className="board-row">
-          <Square value = {squares[6]} onSquareClick = {() => handleClick(6)} />
-          <Square value = {squares[7]} onSquareClick = {() => handleClick(7)} />
-          <Square value = {squares[8]} onSquareClick = {() => handleClick(8)} />
-          </div>
-          <button className="restart" onClick = {handleRestart}>Restart Game</button>
+  return(
+      <div className="container">
+        <div className="status">
+          {status}
         </div>
-    );
+        <div className="board-row">
+        <Square value = {squares[0]} onSquareClick = {() => handleClick(0)} />
+        <Square value = {squares[1]} onSquareClick = {() => handleClick(1)} />
+        <Square value = {squares[2]} onSquareClick = {() => handleClick(2)} />
+        </div>
+        <div className="board-row">
+        <Square value = {squares[3]} onSquareClick = {() => handleClick(3)} />
+        <Square value = {squares[4]} onSquareClick = {() => handleClick(4)} />
+        <Square value = {squares[5]} onSquareClick = {() => handleClick(5)} />
+        </div>
+        <div className="board-row">
+        <Square value = {squares[6]} onSquareClick = {() => handleClick(6)} />
+        <Square value = {squares[7]} onSquareClick = {() => handleClick(7)} />
+        <Square value = {squares[8]} onSquareClick = {() => handleClick(8)} />
+        </div>
+        <button className="restart" onClick = {handleRestart}>Restart Game</button>
+      </div>
+  );
 }
 
 function calculateWinner(squares) {
@@ -86,4 +93,21 @@ function calculateWinner(squares) {
     }
   }
   return null;
+}
+
+
+function playedByComputer(squares){
+  const emptySquares = squares.map((val, i) => (val === null ? i : null)).filter(i => i !== null);
+  for (let i of emptySquares) {
+    let tempSquares = [...squares];
+    tempSquares[i] = '🤖';
+    if (calculateWinner(tempSquares) === '🤖') return i;
+  }
+  for (let i of emptySquares) {
+    let tempSquares = [...squares];
+    tempSquares[i] = 'X';
+    if (calculateWinner(tempSquares) === 'X') return i;
+  }
+
+  return emptySquares[Math.floor(Math.random() * emptySquares.length)];
 }
