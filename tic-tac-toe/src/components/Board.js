@@ -8,7 +8,7 @@ function Square({ value, onSquareClick }) {
 }
 
 
-export default function Board() { 
+export default function Board({ waitTime }) { 
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
 
@@ -35,16 +35,16 @@ export default function Board() {
   let status;
 
   if( winner ){
-    status = winner === 'X' ? '🎉 Winner: X 🎉' : '🎉 Winner: Computer 🎉';
+    status = winner === 'X' ? '🎉 Winner: X 🎉' : '🎉 Winner: Agent 🎉';
   }
   else{
-    status = 'Turn of: ' + (isX ? 'X' : 'Computer');
+    status = (isX ? 'Your turn' : 'Thinking...');
   }
 
   useEffect(() => {
     if(!isX && !calculateWinner(squares)){
-      const index = playedByComputer(squares);
-      setTimeout(() => handleClick(index), 300);
+      const index = playedByComputer(squares, waitTime);
+      setTimeout(() => handleClick(index), waitTime);
     }
   }, [squares]);
 
@@ -96,8 +96,14 @@ function calculateWinner(squares) {
 }
 
 
-function playedByComputer(squares){
+function playedByComputer(squares, waitTime){
   const emptySquares = squares.map((val, i) => (val === null ? i : null)).filter(i => i !== null);
+
+  if(waitTime < 1000) {
+    return emptySquares[Math.floor(Math.random() * emptySquares.length)];
+  }
+
+
   for (let i of emptySquares) {
     let tempSquares = [...squares];
     tempSquares[i] = '🤖';

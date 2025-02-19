@@ -3,17 +3,20 @@ import React from 'react';
 import './App.css';
 
 import Board from './Board'
+import Timer from './Timer';
 
 
-class App extends React.Component {
+const App = () => {
+  const [showBoard, setShowBoard] = React.useState(false);
+  const [waitTime, setWaitTime] = React.useState(300);
 
-  render(){ 
-    return (
-      <div>
-        <Board />    
-      </div>
-    );
+  if(!showBoard) {
+    return <Timer setWaitTime={setWaitTime} setShowBoard={setShowBoard} />
   }
+
+  return (
+      <Board waitTime={waitTime} /> 
+  );
 }
 
 export default App;
