@@ -11,8 +11,15 @@ function Square({ value, onSquareClick }) {
 export default function Board({ waitTime }) { 
   const [squares, setSquares] = useState(Array(9).fill(null));
   const [isX, setIsX] = useState(true);
+  const [totalGames, setTotalGames] = useState(0);
+  const [xWins, setXWins] = useState(0);
 
   function handleRestart(){
+    const winner = calculateWinner(squares);
+    if(winner === 'X'){
+      setXWins(prev => prev + 1);
+    }
+    setTotalGames(prev => prev + 1);
     setIsX(true);
     setSquares(Array(9).fill(null));
   }
@@ -51,25 +58,35 @@ export default function Board({ waitTime }) {
 
   return(
       <div className="container">
+        <div className="score">
+          <span>Your Score: </span>
+          <span className='score-value'>{xWins} / {totalGames}</span>
+        </div>
+        
+
         <div className="status">
           {status}
         </div>
+
         <div className="board-row">
-        <Square value = {squares[0]} onSquareClick = {() => handleClick(0)} />
-        <Square value = {squares[1]} onSquareClick = {() => handleClick(1)} />
-        <Square value = {squares[2]} onSquareClick = {() => handleClick(2)} />
+          <Square value = {squares[0]} onSquareClick = {() => handleClick(0)} />
+          <Square value = {squares[1]} onSquareClick = {() => handleClick(1)} />
+          <Square value = {squares[2]} onSquareClick = {() => handleClick(2)} />
+          </div>
+          <div className="board-row">
+          <Square value = {squares[3]} onSquareClick = {() => handleClick(3)} />
+          <Square value = {squares[4]} onSquareClick = {() => handleClick(4)} />
+          <Square value = {squares[5]} onSquareClick = {() => handleClick(5)} />
+          </div>
+          <div className="board-row">
+          <Square value = {squares[6]} onSquareClick = {() => handleClick(6)} />
+          <Square value = {squares[7]} onSquareClick = {() => handleClick(7)} />
+          <Square value = {squares[8]} onSquareClick = {() => handleClick(8)} />
         </div>
-        <div className="board-row">
-        <Square value = {squares[3]} onSquareClick = {() => handleClick(3)} />
-        <Square value = {squares[4]} onSquareClick = {() => handleClick(4)} />
-        <Square value = {squares[5]} onSquareClick = {() => handleClick(5)} />
-        </div>
-        <div className="board-row">
-        <Square value = {squares[6]} onSquareClick = {() => handleClick(6)} />
-        <Square value = {squares[7]} onSquareClick = {() => handleClick(7)} />
-        <Square value = {squares[8]} onSquareClick = {() => handleClick(8)} />
-        </div>
-        <button className="restart" onClick = {handleRestart}>Restart Game</button>
+
+        <button className="restart" onClick = {handleRestart}>
+          Restart Game
+        </button>
       </div>
   );
 }
